@@ -4,8 +4,10 @@
 >最佳用途： 将 Obsidian 作为 CMS，通过此脚本实时同步内容到 Hugo/Hexo/Jekyll 等静态博客生成器的 content 目录，实现“在 Obsidian 写作，博客自动更新”。  
 > ✨ 功能特性
 >* ⚡️ 实时响应：利用 CouchDB 的 _changes 流，实现毫秒级的同步延迟。
->* 📂 目录结构保持：完美还原 Obsidian 中的文件夹层级。🗑 自动清理：当你在 Obsidian 删除文件或移动目录时，本地对应的文件/空目录也会自动删除。
->* 🎯 过滤机制：支持指定 TARGET_FOLDER（如只同步 Blog/ 目录下的文章），忽略库中其他无关笔记。🛡 文件保护：内置保护机制，不会误删 _index.md 或 .gitignore 等博客系统的元数据文件。
+>* 📂 目录结构保持：完美还原 Obsidian 中的文件夹层级。
+>* 🗑 自动清理：当你在 Obsidian 删除文件或移动目录时，本地对应的文件/空目录也会自动删除。
+>* 🎯 过滤机制：支持指定 TARGET_FOLDER（如只同步 Blog/ 目录下的文章），忽略库中其他无关笔记。
+>* 🛡 文件保护：内置保护机制，不会误删 _index.md 或 .gitignore 等博客系统的元数据文件。
 >* 🐳 Docker 部署：基于 Alpine Linux，镜像体积小，部署简单。
 
 ## 🚀 快速开始 (Docker Compose)这是最推荐的部署方式。你可以将其与你的 CouchDB 服务编排在同一个 docker-compose.yml 文件中。
