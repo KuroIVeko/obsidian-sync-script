@@ -25,7 +25,12 @@ services:
       - obsidian_livesync
     environment:
       # --- 数据库连接配置 ---
-      - DB_HOST=obsidian_livesync  # CouchDB 容器的服务名
+      # 【推荐】方式一：直接填入 CouchDB 的完整地址
+      # 适用于：外部服务器、HTTPS、非标准端口、宿主机 IP
+      - COUCHDB_URL=http://192.168.1.100:5984
+      # - COUCHDB_URL=https://couchdb.example.com
+      # 方式二：如果真的在一个网桥里，也可以只写 container 名
+      # - COUCHDB_URL=http://obsidian_livesync:5984
       - DB_NAME=vault              # Livesync 的数据库名，默认为 vault
       - DB_USER=admin              # 你的 CouchDB 用户名
       - DB_PASS=password           # 你的 CouchDB 密码
@@ -64,9 +69,8 @@ services:
 | **INTERVAL** | `20` | 当实时流断开时的重连/轮询间隔（秒） |
 
 ⚠️ 注意事项
-1. CouchDB在容器**内部**的监听端口**必须**保持为 `5984`（*注意：你依然可以将 CouchDB 的宿主机端口映射为其他（如 15984:5984），这不影响本脚本在容器网络内部的连接。*）。
-2. 单向同步：本脚本是单向的（CouchDB -> 本地文件）。请不要在本地直接修改生成的 Markdown 文件，因为下一次同步时它们会被覆盖。所有的编辑操作都应在 Obsidian 中完成。
-3. 图片处理：脚本目前包含基础的 Base64 图片解码逻辑，但建议配合图床使用，以保持 Markdown 文件的纯净。
-4. 受保护文件：脚本会忽略并保留本地目录下的 _index.md (Hugo 列表页配置) 和 .gitignore 文件，不会将其删除。
+1. 单向同步：本脚本是单向的（CouchDB -> 本地文件）。请不要在本地直接修改生成的 Markdown 文件，因为下一次同步时它们会被覆盖。所有的编辑操作都应在 Obsidian 中完成。
+2. 图片处理：脚本目前包含基础的 Base64 图片解码逻辑，但建议配合图床使用，以保持 Markdown 文件的纯净。
+3. 受保护文件：脚本会忽略并保留本地目录下的 _index.md (Hugo 列表页配置) 和 .gitignore 文件，不会将其删除。
 
 🤝 贡献欢迎提交 Issue 或 Pull Request 来改进代码逻辑！Created with ❤️ by [Suyurine]
