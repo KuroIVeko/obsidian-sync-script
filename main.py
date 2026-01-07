@@ -4,17 +4,29 @@ from requests.auth import HTTPBasicAuth
 # --- 配置 ---
 USER = os.getenv('DB_USER')
 PASS = os.getenv('DB_PASS')
-HOST = os.getenv('DB_HOST')
-DB   = os.getenv('DB_NAME')
+DB   = os.getenv('DB_NAME', 'vault')
+
+# 【修改点】: 优先读取完整的 COUCHDB_URL，如果没有则尝试用旧逻辑拼接
+COUCHDB_URL = os.getenv('COUCHDB_URL', '').rstrip('/')
+DB_HOST = os.getenv('DB_HOST')
+
+if COUCHDB_URL:
+    # 如果用户给了完整地址 (如 http://192.168.1.10:5984)
+    BASE_URL = f'{COUCHDB_URL}/{DB}'
+elif DB_HOST:
+    # 旧方式兼容 (如 http://obsidian_livesync:5984)
+    BASE_URL = f'http://{DB_HOST}:5984/{DB}'
+else:
+    raise ValueError("Missing configuration: Please set COUCHDB_URL.")
 
 TARGET_FOLDER = os.getenv('TARGET_FOLDER', '').strip('/')
-# 注意：这里和 docker-compose 的挂载点对应
 OUT_DIR = '/blog_root/content/posts' 
 POLL_INTERVAL = int(os.getenv('INTERVAL', 20))
 
 PROTECTED_FILES = ['_index.md', '.gitignore']
 
-BASE_URL = f'http://{HOST}:5984/{DB}'
+print(f'[Init] Connecting to: {BASE_URL} (User: {USER})', flush=True)
+
 AUTH = HTTPBasicAuth(USER, PASS)
 
 if not os.path.exists(OUT_DIR): os.makedirs(OUT_DIR)
