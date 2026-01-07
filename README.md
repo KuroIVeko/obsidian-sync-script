@@ -18,7 +18,7 @@
 services:
   # 你的同步服务
   obsidian_sync:
-    image: ghcr.io/你的用户名/obsidian-sync-script:latest
+    image: ghcr.io/kuroiveko/obsidian-sync-script:latest
     container_name: obsidian_sync
     restart: unless-stopped
     depends_on:
