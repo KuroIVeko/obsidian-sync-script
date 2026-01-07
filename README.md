@@ -11,10 +11,10 @@
 >* 🐳 Docker 部署：基于 Alpine Linux，镜像体积小，部署简单。
 
 ## 🚀 快速开始 (Docker Compose)这是最推荐的部署方式。你可以将其与你的 CouchDB 服务编排在同一个 docker-compose.yml 文件中。
-### 1. 目录挂载说明你需要将宿主机上的博客内容目录挂载到容器的 /blog_root/content/posts (或脚本中定义的路径)。
-### 2. Docker Compose 配置示例如果你直接使用本仓库构建好的镜像（假设你已推送到 GHCR）：YAMLversion: '3.8'
-
+### 1. 目录挂载说明：你需要将宿主机上的博客内容目录挂载到容器的/blog_root/content/posts (或脚本中定义的路径)。
+### 2. Docker Compose 配置示例,如果你直接使用本仓库构建好的镜像：
 ```
+YAMLversion: '3.8'
 services:
   # 你的同步服务
   obsidian_sync:
