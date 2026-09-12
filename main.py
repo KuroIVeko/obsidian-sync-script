@@ -1,4 +1,4 @@
-import os, requests, json, base64, time, shutil
+import os, re, requests, json, base64, time, shutil
 from requests.auth import HTTPBasicAuth
 
 # --- 配置 ---
@@ -30,6 +30,33 @@ print(f'[Init] Connecting to: {BASE_URL} (User: {USER})', flush=True)
 AUTH = HTTPBasicAuth(USER, PASS)
 
 if not os.path.exists(OUT_DIR): os.makedirs(OUT_DIR)
+
+BASE64_RE = re.compile(r'^[A-Za-z0-9+/]+={0,2}$')
+
+
+def decode_chunk(part):
+    """还原一个内容块。
+
+    只有在能严格确认是 base64 时才解码：字符集、长度，以及重新编码后与
+    原文完全一致（round-trip 校验）。其余一律原样返回。
+
+    这样做的原因：base64.b64decode 默认（validate=False）会静默丢弃所有
+    不在 base64 字符表里的字符——换行、空格、[ { < 引号都在此列。
+    旧逻辑靠首字符猜测是否 base64，导致内容为单个换行符的块被解码成空
+    字符串，Markdown 代码块因此被压成一行。
+    """
+    if not isinstance(part, str):
+        return str(part)
+    if not BASE64_RE.match(part) or len(part) < 4 or len(part) % 4 != 0:
+        return part
+    try:
+        decoded = base64.b64decode(part, validate=True)
+        if base64.b64encode(decoded).decode('ascii') != part:
+            return part
+        return decoded.decode('utf-8')
+    except Exception:
+        return part
+
 
 def perform_sync():
     try:
@@ -84,14 +111,8 @@ def perform_sync():
             raw_content = ''
             for cid in chunk_ids:
                 part = chunk_map.get(cid) or chunk_map.get(f'h:{cid}')
-                if part:
-                    try:
-                        if isinstance(part, str) and not part.startswith('#') and not part.startswith('---') and not part.startswith('<'):
-                            raw_content += base64.b64decode(part).decode('utf-8')
-                        else:
-                            raw_content += part
-                    except:
-                        raw_content += str(part)
+                if part is not None:
+                    raw_content += decode_chunk(part)
 
             if raw_content:
                 clean_content = raw_content.replace('\ufeff', '').lstrip()
